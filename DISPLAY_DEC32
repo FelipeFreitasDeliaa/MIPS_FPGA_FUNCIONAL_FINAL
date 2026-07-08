@@ -1,0 +1,37 @@
+// =====================================================================
+//  DISPLAY_DEC32.v
+//  Mostra um valor de 32 bits em DECIMAL nos 8 displays de 7 segmentos
+//  da DE2-115 (HEX7..HEX0), COM zeros a esquerda.
+//
+//    HEX0 = unidades  ...  HEX7 = dezenas de milhao
+//    Ex.: valor = 42  ->  0 0 0 0 0 0 4 2
+//
+//  Valor tratado como SEM SINAL. Com 8 displays mostra ate 99.999.999;
+//  valores de 32 bits maiores (10 digitos) exibem os 8 menos
+//  significativos.
+// =====================================================================
+module DISPLAY_DEC32 (
+    input  wire [31:0] valor,
+    output wire [6:0]  HEX0,
+    output wire [6:0]  HEX1,
+    output wire [6:0]  HEX2,
+    output wire [6:0]  HEX3,
+    output wire [6:0]  HEX4,
+    output wire [6:0]  HEX5,
+    output wire [6:0]  HEX6,
+    output wire [6:0]  HEX7
+);
+    // binario -> 10 digitos BCD
+    wire [39:0] bcd;
+    BIN_PARA_BCD conv (.binario(valor), .bcd(bcd));
+
+    // decodifica os 8 digitos menos significativos (mostra zeros a esquerda)
+    DECODER_7SEG e0 (.valor(bcd[ 3: 0]), .segmentos(HEX0));
+    DECODER_7SEG e1 (.valor(bcd[ 7: 4]), .segmentos(HEX1));
+    DECODER_7SEG e2 (.valor(bcd[11: 8]), .segmentos(HEX2));
+    DECODER_7SEG e3 (.valor(bcd[15:12]), .segmentos(HEX3));
+    DECODER_7SEG e4 (.valor(bcd[19:16]), .segmentos(HEX4));
+    DECODER_7SEG e5 (.valor(bcd[23:20]), .segmentos(HEX5));
+    DECODER_7SEG e6 (.valor(bcd[27:24]), .segmentos(HEX6));
+    DECODER_7SEG e7 (.valor(bcd[31:28]), .segmentos(HEX7));
+endmodule
